@@ -1,5 +1,6 @@
 defmodule FsmPlayground.TrafficLight do
   @moduledoc """
+  # (enter, OldState, State, Data)
   """
 
   use GenStateMachine, callback_mode: [:handle_event_function, :state_enter]
@@ -17,41 +18,46 @@ defmodule FsmPlayground.TrafficLight do
     {:ok, state, opts}
   end
 
-  # (enter, OldState, State, Data)
-  def handle_event(:enter, :red, _, _data) do
-    IO.puts("The light is currently Red")
-    {:keep_state_and_data, [{:state_timeout, 5_000, :green}]}
+  # :enter EVENT type, OLD STATE, CURRENT/NEW STATE, data
+  def handle_event(:enter, _, :red, data) do
+    IO.puts("\n\nThe light is currently Red")
+    # red state recieves an event called green after 5 seconds.
+    # list of ACTIONS; actions are taken on whatever stae you're ENTERING,
+    # but not necessarily EVENTS
+    # :state_time, the event type is :state_timeout
+    # {:next_event, :internal, event_CONTENT}: :next_event, :internal is the event type, event_data is not STATE data, but it is 
+    {:keep_state_and_data, [{:state_timeout, 5_000, :change}]}
   end
 
-  def handle_event(:state_timeout, :green, :red, _data) do
-    IO.puts("The light is currently GREEN (from red)")
-    {:keep_state_and_data, [{:state_timeout, 8_000, :yellow}]}
+  def handle_event(:state_timeout, :change, :red, data) do
+    IO.puts("\n\nSTATE TRANSITION from RED to GREEN")
+    # So, this gets hit, then tries to call 
+    # transitioning to green, and sending the event in the parens TO GREEN
+    {:next_state, :green, data}
   end
 
-  def handle_event(:state_timeout, :yellow, _what_is_this?, _data) do
-    IO.puts("The light is currently YELLOW (from green...?)")
-    {:keep_state_and_data, [{:state_timeout, 3_000, :red}]}
+  def handle_event(:enter, :red, :green, data) do
+    IO.puts("\n\nThe light is currently GREEN")
+    {:keep_state_and_data, [{:state_timeout, 5_000, :change}]}
   end
 
-  def handle_event(:state_timeout, :red, _what_is_this?, _data) do
-    IO.puts("The light is currently RED (from yellow...?)")
-    {:keep_state_and_data, [{:state_timeout, 5_000, :green}]}
+  def handle_event(:state_timeout, :change, :green, data) do
+    IO.puts("\n\nSTATE TRANSITION from GREEN to YELLOW")
+    # So, this gets hit, then tries to call 
+    # transitioning to green, and sending the event in the parens TO GREEN
+    {:next_state, :yellow, data}
   end
 
-  # TODO: Enter callbacks are never called... something to do with the state_timeout?
-  # def handle_event(:enter, :red, :green, _data) do
-  #  IO.puts("ENTER: The light is currently Red")
-  #  {:keep_state_and_data, [{:state_timeout, 5_000, :green}]}
-  # end
-
-  def handle_event(:enter, :green, :red, _data) do
-    IO.puts("ENTER: The light is currently Green")
-    {:keep_state_and_data, [{:state_timeout, 8_000, :yellow}]}
+  def handle_event(:enter, :green, :yellow, data) do
+    IO.puts("\n\nThe light is currently YELLOW")
+    {:keep_state_and_data, [{:state_timeout, 5_000, :change}]}
   end
 
-  def handle_event(:enter, :yellow, :green, _data) do
-    IO.puts("ENTER: The light is currently Yellow")
-    {:keep_state_and_data, [{:state_timeout, 3_000, :red}]}
+  def handle_event(:state_timeout, :change, :yellow, data) do
+    IO.puts("\n\nSTATE TRANSITION from YELLOW to RED")
+    # So, this gets hit, then tries to call 
+    # transitioning to green, and sending the event in the parens TO GREEN
+    {:next_state, :red, data}
   end
 
   def handle_event({:call, from}, :get_state, state, data) do

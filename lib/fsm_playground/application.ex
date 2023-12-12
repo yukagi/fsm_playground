@@ -8,8 +8,9 @@ defmodule FsmPlayground.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      #FsmPlayground.Switch,
-      #FsmPlayground.Lockbox,
+      # FsmPlayground.Switch,
+      # FsmPlayground.Lockbox,
+      FsmPlayground.TrafficLight
       # Starts a worker by calling: FsmPlayground.Worker.start_link(arg)
       # {FsmPlayground.Worker, arg}
     ]
