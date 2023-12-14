@@ -10,7 +10,8 @@ defmodule FsmPlayground.Application do
     children = [
       # FsmPlayground.Switch,
       # FsmPlayground.Lockbox,
-      FsmPlayground.TrafficLight
+      # FsmPlayground.TrafficLight
+      FsmPlayground.Silly
       # Starts a worker by calling: FsmPlayground.Worker.start_link(arg)
       # {FsmPlayground.Worker, arg}
     ]
